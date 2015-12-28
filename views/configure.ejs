@@ -1,0 +1,14 @@
+<html>
+<body>
+    <form method="post" action="/<%=hash%>/configure/save">
+        Title: <input type="text" name="title" value="<%=configuration.title%>">
+        <br>
+        Message:
+        <textarea name="message" cols="50" rows="10">
+            <%= configuration.message %>
+        </textarea>
+
+        <input type="submit" value="save">
+    </form>
+</body>
+</html>
