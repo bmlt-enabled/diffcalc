@@ -2,7 +2,7 @@
 <html>
 <script type="text/javascript" src="/javascripts/jquery-1.7.1.min.js"></script>
 <script type="text/javascript" src="/javascripts/site.js"></script>
-<h1><%= configuration.title %></h1>
+<h1><%= (!!configuration)?configuration.title:'' %></h1>
 <form method="post" action="/<%= hash %>/submit">
 <table border="0" cellpadding="1" cellspacing="1">
     <tr>
@@ -141,10 +141,10 @@
             </select></td>
     </tr>
 </table>
-<input type="submit" value="Submit" onclick="return validateFields();"/>
+<input type="submit" value="Calculate" onclick="return validateFields();"/>
 </form>
 <hr>
-<%= configuration.message %>
+<div id="message"><%- (!!configuration)?configuration.message:'' %></div>
 <hr>
 <a href="<%= hash %>/total">...</a>
 </html>

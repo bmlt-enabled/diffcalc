@@ -6,11 +6,6 @@ var router = express.Router();
 /* GET home page. */
 router.get('/:hash', function(req, res, next) {
   store.getAll(req.params.hash, "config", function(results) {
-    if (results == null) {
-      results = {
-        title: "", message: ""
-      };
-    }
     res.render('index', { hash: req.params.hash, configuration : JSON.parse(results.config) });
   });
 });
@@ -46,11 +41,6 @@ router.get("/:hash/total", function(req, res, next) {
 
 router.get("/:hash/configure", function(req, res, next) {
   store.getAll(req.params.hash, "config", function(results) {
-    if (results == null) {
-      results = {
-        title: "", message: ""
-      };
-    }
     res.render('configure', { hash: req.params.hash, configuration : JSON.parse(results.config) });
   });
 });
