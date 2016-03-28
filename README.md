@@ -1,7 +1,7 @@
 # diffcalc
 
 ### How to export keys and then restore
-_Export_+
+_Export_
 ```shell
 redis-cli dump nynl22:dates | perl -pe 'chomp if eof' > mykey.dump
 ```
