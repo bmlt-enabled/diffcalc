@@ -21,5 +21,23 @@ module.exports = {
             client.quit();
             callback(results);
         });
+    },
+
+    'export' : function(hash, type, callback) {
+        var client = redis.createClient();
+        var exportText = "";
+
+        client.hgetall(hash + ":" + type, function(err, results) {
+            client.quit();
+
+            Object.keys(results).forEach(function(key) {
+                var keyObject = JSON.parse(results[key]);
+                if (keyObject.email != null && keyObject.email.length > 0) {
+                    exportText += keyObject.email + "\r\n";
+                }
+            });
+
+            callback(exportText);
+        });
     }
 };

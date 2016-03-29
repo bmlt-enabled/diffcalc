@@ -3,10 +3,13 @@ var store = require('../middleware/store');
 var calculator = require('../middleware/calculator');
 var router = express.Router();
 
-/* GET home page. */
 router.get('/:hash', function(req, res, next) {
   store.getAll(req.params.hash, "config", function(results) {
-    res.render('index', { hash: req.params.hash, configuration : JSON.parse(results["config"]) });
+    if (results != null) {
+      res.render('index', { hash: req.params.hash, configuration : JSON.parse(results["config"]) });
+    } else {
+      res.send(404);
+    }
   });
 });
 
@@ -39,9 +42,27 @@ router.get("/:hash/total", function(req, res, next) {
   });
 });
 
+router.get("/:hash/export", function(req, res, next) {
+  store.export(req.params.hash, "dates", function(results) {
+    if (results != null) {
+      res.writeHead(200, {
+        'Content-Type': 'application/force-download',
+        'Content-disposition': 'attachment; filename=emails.txt'
+      });
+      res.end(results);
+    } else {
+      res.send(404);
+    }
+  });
+});
+
 router.get("/:hash/configure", function(req, res, next) {
   store.getAll(req.params.hash, "config", function(results) {
-    res.render('configure', { hash: req.params.hash, configuration : JSON.parse(results.config) });
+    if (results != null) {
+      res.render('configure', {hash: req.params.hash, configuration: JSON.parse(results.config)});
+    } else {
+      res.render('configure', { hash: req.params.hash, configuration : null });
+    }
   });
 });
 
