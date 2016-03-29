@@ -20,7 +20,7 @@ var self = {
         var increment = 0;
 
         if (fromDate.date() > toDate.date()) {
-            increment = monthDay[fromDate.month() - 1];
+            increment = monthDay[fromDate.month()];
         }
 
         if (increment == -1) {

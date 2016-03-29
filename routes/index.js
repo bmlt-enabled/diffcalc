@@ -6,7 +6,7 @@ var router = express.Router();
 /* GET home page. */
 router.get('/:hash', function(req, res, next) {
   store.getAll(req.params.hash, "config", function(results) {
-    res.render('index', { hash: req.params.hash, configuration : JSON.parse(results.config) });
+    res.render('index', { hash: req.params.hash, configuration : JSON.parse(results["config"]) });
   });
 });
 
