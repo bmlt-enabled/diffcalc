@@ -1,5 +1,11 @@
 # diffcalc
 
+### To run
+
+```shell
+npm start
+```
+
 ### How to export keys and then restore
 _Export_
 ```shell
