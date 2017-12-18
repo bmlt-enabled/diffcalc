@@ -30,12 +30,14 @@ module.exports = {
         client.hgetall(hash + ":" + type, function(err, results) {
             client.quit();
 
-            Object.keys(results).forEach(function(key) {
-                var keyObject = JSON.parse(results[key]);
-                if (keyObject.email != null && keyObject.email.length > 0) {
-                    exportText += keyObject.email + "\r\n";
-                }
-            });
+            if (results != null) {
+                Object.keys(results).forEach(function(key) {
+                    var keyObject = JSON.parse(results[key]);
+                    if (keyObject.email != null && keyObject.email.length > 0) {
+                        exportText += keyObject.email + "\r\n";
+                    }
+                });
+            }
 
             callback(exportText);
         });
