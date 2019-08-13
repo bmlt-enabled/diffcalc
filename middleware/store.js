@@ -15,7 +15,7 @@ module.exports = {
     },
 
     'getAll' : function(hash, type, callback) {
-        var client = redis.createClient();
+        var client = redis.createClient(process.env.REDISCLOUD_URL);
 
         client.hgetall(hash + ":" + type, function(err, results) {
             client.quit();
@@ -24,7 +24,7 @@ module.exports = {
     },
 
     'export' : function(hash, type, callback) {
-        var client = redis.createClient();
+        var client = redis.createClient(process.env.REDISCLOUD_URL);
         var exportText = "";
 
         client.hgetall(hash + ":" + type, function(err, results) {
