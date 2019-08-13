@@ -2,7 +2,7 @@ var redis = require("redis");
 
 module.exports = {
     'save' : function(hash, type, key, value, callback) {
-        var client = redis.createClient();
+        var client = redis.createClient(process.env.REDISCLOUD_URL);
 
         client.on("error", function (err) {
             console.log("Error " + err);
