@@ -15,6 +15,6 @@
     "morgan": "~1.10.1",
     "node-redis": "^0.1.7",
     "redis": "^3.1.1",
-    "serve-favicon": "~2.3.0"
+    "serve-favicon": "~2.5.1"
   }
 }
