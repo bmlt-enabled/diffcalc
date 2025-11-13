@@ -1,8 +1,25 @@
 var redis = require("redis");
 
+// Helper function to create Redis client with proper TLS configuration
+function createRedisClient() {
+    var redisUrl = process.env.REDIS_URL || process.env.REDISCLOUD_URL;
+
+    // Check if using TLS (rediss://)
+    if (redisUrl && redisUrl.startsWith('rediss://')) {
+        return redis.createClient({
+            url: redisUrl,
+            tls: {
+                rejectUnauthorized: false
+            }
+        });
+    }
+
+    return redis.createClient(redisUrl);
+}
+
 module.exports = {
     'save' : function(hash, type, key, value, callback) {
-        var client = redis.createClient(process.env.REDIS_URL || process.env.REDISCLOUD_URL);
+        var client = createRedisClient();
 
         client.on("error", function (err) {
             console.log("Error " + err);
@@ -15,7 +32,7 @@ module.exports = {
     },
 
     'getAll' : function(hash, type, callback) {
-        var client = redis.createClient(process.env.REDIS_URL || process.env.REDISCLOUD_URL);
+        var client = createRedisClient();
 
         client.hgetall(hash + ":" + type, function(err, results) {
             client.quit();
@@ -24,7 +41,7 @@ module.exports = {
     },
 
     'export' : function(hash, type, callback) {
-        var client = redis.createClient(process.env.REDIS_URL || process.env.REDISCLOUD_URL);
+        var client = createRedisClient();
         var exportText = "";
 
         client.hgetall(hash + ":" + type, function(err, results) {
