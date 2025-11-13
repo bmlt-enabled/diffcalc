@@ -1,92 +1,115 @@
 <!DOCTYPE html>
-<html>
-<script type="text/javascript" src="/javascripts/jquery-1.7.1.min.js"></script>
-<script type="text/javascript" src="/javascripts/site.js"></script>
-<h1><%= (!!configuration)?configuration.title:'' %></h1>
-<form method="post" action="/<%= hash %>/submit">
-<table border="0" cellpadding="1" cellspacing="1">
-    <tr>
-        <td>First Name: </td>
-        <td><input type="text" name="firstname" id="FirstName" size="50" maxlength="50"/></td>
-    </tr>
-    <tr>
-        <td>Last Initial: </td>
-        <td><input type="text" name="lastname" id="LastName" size="1" maxlength="1" /></td>
-    </tr>
-    <tr>
-        <td>Email: </td>
-        <td><input type="text" name="email" id="Email" size="50" maxlength="50" /></td>
-    </tr>
-    <tr>
-        <td>Month:</td>
-        <td><select name="month">
-                <option value="1">January</option>
-                <option value="2">February</option>
-                <option value="3">March</option>
-                <option value="4">April</option>
-                <option value="5">May</option>
-                <option value="6">June</option>
-                <option value="7">July</option>
-                <option value="8">August</option>
-                <option value="9">September</option>
-                <option value="10">October</option>
-                <option value="11">November</option>
-                <option selected="" value="12">December</option></select>
-        </td>
-    </tr>
-    <tr>
-        <td>Day:</td>
-        <td>
-            <select name="day">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-                <option value="10">10</option>
-                <option value="11">11</option>
-                <option value="12">12</option>
-                <option value="13">13</option>
-                <option value="14">14</option>
-                <option value="15">15</option>
-                <option value="16">16</option>
-                <option value="17">17</option>
-                <option value="18">18</option>
-                <option value="19">19</option>
-                <option value="20">20</option>
-                <option value="21">21</option>
-                <option value="22">22</option>
-                <option value="23">23</option>
-                <option value="24">24</option>
-                <option value="25">25</option>
-                <option value="26">26</option>
-                <option value="27">27</option>
-                <option value="28">28</option>
-                <option value="29">29</option>
-                <option value="30">30</option>
-                <option value="31" selected="">31</option>
-            </select>
-        </td>
-    </tr>
-    <tr>
-        <td>Year:</td>
-        <td><select name="year">
-            <%inceptionYear = 1953
-              thisYear = (new Date()).getFullYear(); 
-              for (year = inceptionYear; year <= thisYear; year++) {%>
-                <option value="<%=year%>"<%if (year == thisYear) {%> selected<%}%>><%=year%></option>
-            <%}%>
-            </select></td>
-    </tr>
-</table>
-<input type="submit" value="Calculate" onclick="return validateFields();"/>
-</form>
-<hr>
-<div id="message"><%- (!!configuration)?configuration.message:'' %></div>
-<hr>
-<a href="<%= hash %>/total">...</a>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= (!!configuration)?configuration.title:'Sobriety Calculator' %></title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <script type="text/javascript" src="/javascripts/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="/javascripts/site.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1><%= (!!configuration)?configuration.title:'Sobriety Calculator' %></h1>
+
+        <% if (!!configuration && configuration.message) { %>
+        <div class="message"><%- configuration.message %></div>
+        <% } %>
+
+        <form method="post" action="/<%= hash %>/submit">
+            <div class="form-group">
+                <label for="FirstName">First Name</label>
+                <input type="text" name="firstname" id="FirstName" maxlength="50" required/>
+            </div>
+
+            <div class="form-group">
+                <label for="LastName">Last Initial</label>
+                <input type="text" name="lastname" id="LastName" maxlength="1" required/>
+            </div>
+
+            <div class="form-group">
+                <label for="Email">Email</label>
+                <input type="email" name="email" id="Email" maxlength="50"/>
+            </div>
+
+            <div class="form-group">
+                <label>Clean Date</label>
+                <div class="date-fields">
+                    <div>
+                        <label for="month">Month</label>
+                        <select name="month" id="month">
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option selected value="12">December</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="day">Day</label>
+                        <select name="day" id="day">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                            <option value="13">13</option>
+                            <option value="14">14</option>
+                            <option value="15">15</option>
+                            <option value="16">16</option>
+                            <option value="17">17</option>
+                            <option value="18">18</option>
+                            <option value="19">19</option>
+                            <option value="20">20</option>
+                            <option value="21">21</option>
+                            <option value="22">22</option>
+                            <option value="23">23</option>
+                            <option value="24">24</option>
+                            <option value="25">25</option>
+                            <option value="26">26</option>
+                            <option value="27">27</option>
+                            <option value="28">28</option>
+                            <option value="29">29</option>
+                            <option value="30">30</option>
+                            <option selected value="31">31</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="year">Year</label>
+                        <select name="year" id="year">
+                            <%inceptionYear = 1953
+                              thisYear = (new Date()).getFullYear();
+                              for (year = inceptionYear; year <= thisYear; year++) {%>
+                                <option value="<%=year%>"<%if (year == thisYear) {%> selected<%}%>><%=year%></option>
+                            <%}%>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <input type="submit" value="Calculate" onclick="return validateFields();"/>
+        </form>
+
+        <hr>
+        <div style="text-align: center;">
+            <a href="<%= hash %>/total">View Total Time</a>
+        </div>
+    </div>
+</body>
 </html>

@@ -1,4 +1,26 @@
-<meta http-equiv="refresh" content="10; url=/<%= hash %>">
-Congratulations <%= allFields.firstname %>, you have been clean <%= calculated.years %> years, <%=calculated.months %> months, and <%=calculated.days%> days, or <%=calculated.totalDays%> days!
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="10; url=/<%= hash %>">
+    <title>Congratulations!</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="result-box">
+            <h2>Congratulations, <%= allFields.firstname %>!</h2>
+            <p class="stats">You have been clean</p>
+            <p class="stats"><%= calculated.years %> years, <%= calculated.months %> months, and <%= calculated.days %> days</p>
+            <div class="total-days"><%= calculated.totalDays %></div>
+            <p class="stats">Total Days</p>
+        </div>
 
-<p><a href="/<%= hash%>">Click here</a> to return to the home page.</p>
+        <div class="back-link">
+            <p>You will be redirected to the home page in 10 seconds.</p>
+            <p><a href="/<%= hash %>">Click here to return now</a></p>
+        </div>
+    </div>
+</body>
+</html>

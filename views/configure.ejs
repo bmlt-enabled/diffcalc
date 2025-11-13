@@ -1,16 +1,33 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configure</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
 <body>
-    <form method="post" action="/<%=hash%>/configure/save">
-        Title: <input type="text" name="title" value="<%= (!!configuration)?configuration.title:'' %>">
-        <br>
-        Message:
-        <textarea name="message" cols="50" rows="10">
-            <%= (!!configuration)?configuration.message:'' %>
-        </textarea>
+    <div class="container">
+        <h1>Configuration</h1>
 
-        <input type="submit" value="save">
-    </form>
+        <form method="post" action="/<%=hash%>/configure/save">
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" name="title" id="title" value="<%= (!!configuration)?configuration.title:'' %>">
+            </div>
 
-    Export <a href="/<%=hash%>/export">here</a>.
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea name="message" id="message" rows="10"><%= (!!configuration)?configuration.message:'' %></textarea>
+            </div>
+
+            <input type="submit" value="Save Configuration">
+        </form>
+
+        <div class="admin-section">
+            <h2 style="margin-bottom: 15px; color: #667eea;">Export Data</h2>
+            <p>Download all submitted data: <a href="/<%=hash%>/export">Export to file</a></p>
+        </div>
+    </div>
 </body>
 </html>

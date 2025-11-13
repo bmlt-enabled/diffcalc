@@ -1,1 +1,25 @@
-Total Time: <%=total.years%> year(s), <%=total.months%> month(s), <%=total.days%> day(s) or <%=total.totalDays%> total day(s).
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Total Time</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Total Time</h1>
+
+        <div class="result-box">
+            <h2>Combined Total</h2>
+            <p class="stats"><%=total.years%> year(s), <%=total.months%> month(s), and <%=total.days%> day(s)</p>
+            <div class="total-days"><%=total.totalDays%></div>
+            <p class="stats">Total Days</p>
+        </div>
+
+        <div class="back-link">
+            <a href="javascript:history.back()">Go Back</a>
+        </div>
+    </div>
+</body>
+</html>
