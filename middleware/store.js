@@ -2,7 +2,7 @@ var redis = require("redis");
 
 module.exports = {
     'save' : function(hash, type, key, value, callback) {
-        var client = redis.createClient(process.env.REDISCLOUD_URL);
+        var client = redis.createClient(process.env.REDIS_URL || process.env.REDISCLOUD_URL);
 
         client.on("error", function (err) {
             console.log("Error " + err);
@@ -15,7 +15,7 @@ module.exports = {
     },
 
     'getAll' : function(hash, type, callback) {
-        var client = redis.createClient(process.env.REDISCLOUD_URL);
+        var client = redis.createClient(process.env.REDIS_URL || process.env.REDISCLOUD_URL);
 
         client.hgetall(hash + ":" + type, function(err, results) {
             client.quit();
@@ -24,7 +24,7 @@ module.exports = {
     },
 
     'export' : function(hash, type, callback) {
-        var client = redis.createClient(process.env.REDISCLOUD_URL);
+        var client = redis.createClient(process.env.REDIS_URL || process.env.REDISCLOUD_URL);
         var exportText = "";
 
         client.hgetall(hash + ":" + type, function(err, results) {
