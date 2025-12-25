@@ -18,7 +18,11 @@ function requireAuth(req, res, next) {
 router.get('/:hash', function(req, res, next) {
   store.getAll(req.params.hash, "config", function(results) {
     if (results != null) {
-      res.render('index', { hash: req.params.hash, configuration : JSON.parse(results["config"]) });
+      res.render('index', {
+        hash: req.params.hash,
+        configuration: JSON.parse(results["config"]),
+        error: req.query.error || null
+      });
     } else {
       res.send(404);
     }
@@ -34,16 +38,21 @@ router.post("/:hash/submit", function(req, res, next) {
   var lastname = req.body["lastname"];
   var allFields = req.body;
 
-  // calculate
-  var calculated = calculator.calculate(year, month, day)
-
-  // store it
   var hash = req.params.hash;
   var key = firstname + "_" + lastname + "_" + month + "-" + day + "-" + year;
-  store.save(hash, "dates", key, allFields);
 
-  // show result
-  res.render('submitted', { hash : hash, allFields : allFields, calculated : calculated });
+  // Check for duplicate before saving
+  store.get(hash, "dates", key, function(existing) {
+    if (existing) {
+      // Duplicate found - redirect back with error message
+      res.redirect('/' + hash + '?error=duplicate');
+    } else {
+      // No duplicate - calculate and save
+      var calculated = calculator.calculate(year, month, day);
+      store.save(hash, "dates", key, allFields);
+      res.render('submitted', { hash: hash, allFields: allFields, calculated: calculated });
+    }
+  });
 });
 
 router.get("/:hash/total", function(req, res, next) {

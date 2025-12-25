@@ -328,6 +328,18 @@ table td:first-child {
   font-weight: 500;
 }
 
+/* Duplicate notice styling */
+.duplicate-notice {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  color: #856404;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 20px 0;
+  text-align: center;
+  font-weight: 500;
+}
+
 /* Logout bar styling */
 .logout-bar {
   text-align: right;
