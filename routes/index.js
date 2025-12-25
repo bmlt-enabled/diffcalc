@@ -3,6 +3,18 @@ var store = require('../middleware/store');
 var calculator = require('../middleware/calculator');
 var router = express.Router();
 
+// Password for configure page (from environment variable)
+var CONFIGURE_PASSWORD = process.env.CONFIGURE_PASSWORD;
+
+// Middleware to check if user is authenticated for configure routes
+function requireAuth(req, res, next) {
+  if (req.signedCookies.configureAuth === 'authenticated') {
+    next();
+  } else {
+    res.redirect('/' + req.params.hash + '/configure/login');
+  }
+}
+
 router.get('/:hash', function(req, res, next) {
   store.getAll(req.params.hash, "config", function(results) {
     if (results != null) {
@@ -56,7 +68,26 @@ router.get("/:hash/export", function(req, res, next) {
   });
 });
 
-router.get("/:hash/configure", function(req, res, next) {
+// Login page for configure
+router.get("/:hash/configure/login", function(req, res, next) {
+  res.render('configure-login', { hash: req.params.hash, error: null });
+});
+
+router.post("/:hash/configure/login", function(req, res, next) {
+  if (req.body.password === CONFIGURE_PASSWORD) {
+    res.cookie('configureAuth', 'authenticated', { signed: true, httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+    res.redirect('/' + req.params.hash + '/configure');
+  } else {
+    res.render('configure-login', { hash: req.params.hash, error: 'Invalid password' });
+  }
+});
+
+router.get("/:hash/configure/logout", function(req, res, next) {
+  res.clearCookie('configureAuth');
+  res.redirect('/' + req.params.hash);
+});
+
+router.get("/:hash/configure", requireAuth, function(req, res, next) {
   store.getAll(req.params.hash, "config", function(configResults) {
     store.getAll(req.params.hash, "dates", function(datesResults) {
       var configuration = configResults ? JSON.parse(configResults.config) : null;
@@ -79,20 +110,20 @@ router.get("/:hash/configure", function(req, res, next) {
   });
 });
 
-router.post("/:hash/configure/save", function(req, res, next) {
+router.post("/:hash/configure/save", requireAuth, function(req, res, next) {
   store.save(req.params.hash, "config", "config", req.body, function(results) {
     res.redirect('/' + req.params.hash + '/configure');
   });
 });
 
-router.post("/:hash/record/delete", function(req, res, next) {
+router.post("/:hash/record/delete", requireAuth, function(req, res, next) {
   var key = req.body.key;
   store.delete(req.params.hash, "dates", key, function(result) {
     res.redirect('/' + req.params.hash + '/configure');
   });
 });
 
-router.get("/:hash/record/edit/:key", function(req, res, next) {
+router.get("/:hash/record/edit/:key", requireAuth, function(req, res, next) {
   var key = decodeURIComponent(req.params.key);
   store.get(req.params.hash, "dates", key, function(record) {
     if (record) {
@@ -104,7 +135,7 @@ router.get("/:hash/record/edit/:key", function(req, res, next) {
   });
 });
 
-router.post("/:hash/record/edit/:key", function(req, res, next) {
+router.post("/:hash/record/edit/:key", requireAuth, function(req, res, next) {
   var oldKey = decodeURIComponent(req.params.key);
   var hash = req.params.hash;
 

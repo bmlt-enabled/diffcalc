@@ -49,6 +49,7 @@ label {
 
 input[type="text"],
 input[type="email"],
+input[type="password"],
 select,
 textarea {
   width: 100%;
@@ -62,6 +63,7 @@ textarea {
 
 input[type="text"]:focus,
 input[type="email"]:focus,
+input[type="password"]:focus,
 select:focus,
 textarea:focus {
   outline: none;
@@ -309,6 +311,42 @@ table td:first-child {
 }
 
 .btn-cancel:hover {
+  background: #7f8c8d;
+  color: white;
+  text-decoration: none;
+}
+
+/* Error message styling */
+.error-message {
+  background: #fee;
+  border: 1px solid #e74c3c;
+  color: #c0392b;
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Logout bar styling */
+.logout-bar {
+  text-align: right;
+  margin-bottom: 10px;
+}
+
+.btn-logout {
+  display: inline-block;
+  padding: 8px 16px;
+  background: #95a5a6;
+  color: white;
+  border-radius: 6px;
+  font-size: 0.85em;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-logout:hover {
   background: #7f8c8d;
   color: white;
   text-decoration: none;
