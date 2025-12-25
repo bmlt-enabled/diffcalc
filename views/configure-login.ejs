@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configure Login</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Configure Login</h1>
+
+        <% if (error) { %>
+            <div class="error-message"><%= error %></div>
+        <% } %>
+
+        <form method="post" action="/<%=hash%>/configure/login">
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" required autofocus>
+            </div>
+
+            <input type="submit" value="Login">
+        </form>
+
+        <div class="back-link">
+            <a href="/<%=hash%>">Back to Calculator</a>
+        </div>
+    </div>
+</body>
+</html>
