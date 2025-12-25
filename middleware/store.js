@@ -58,5 +58,27 @@ module.exports = {
 
             callback(exportText);
         });
+    },
+
+    'get' : function(hash, type, key, callback) {
+        var client = createRedisClient();
+
+        client.hget(hash + ":" + type, key, function(err, result) {
+            client.quit();
+            callback(result ? JSON.parse(result) : null);
+        });
+    },
+
+    'delete' : function(hash, type, key, callback) {
+        var client = createRedisClient();
+
+        client.on("error", function (err) {
+            console.log("Error " + err);
+        });
+
+        client.hdel(hash + ":" + type, key, function(err, result) {
+            client.quit();
+            if (callback != null) callback(result);
+        });
     }
 };

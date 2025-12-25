@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Record</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Record</h1>
+
+        <form method="post" action="/<%=hash%>/record/edit/<%= encodeURIComponent(record._key) %>">
+            <div class="form-group">
+                <label for="FirstName">First Name</label>
+                <input type="text" name="firstname" id="FirstName" maxlength="50" required value="<%= record.firstname %>"/>
+            </div>
+
+            <div class="form-group">
+                <label for="LastName">Last Initial</label>
+                <input type="text" name="lastname" id="LastName" maxlength="1" required value="<%= record.lastname %>"/>
+            </div>
+
+            <div class="form-group">
+                <label for="Email">Email</label>
+                <input type="email" name="email" id="Email" maxlength="50" value="<%= record.email || '' %>"/>
+            </div>
+
+            <div class="form-group">
+                <label>Clean Date</label>
+                <div class="date-fields">
+                    <div>
+                        <label for="month">Month</label>
+                        <select name="month" id="month">
+                            <option value="1"<%= record.month == 1 ? ' selected' : '' %>>January</option>
+                            <option value="2"<%= record.month == 2 ? ' selected' : '' %>>February</option>
+                            <option value="3"<%= record.month == 3 ? ' selected' : '' %>>March</option>
+                            <option value="4"<%= record.month == 4 ? ' selected' : '' %>>April</option>
+                            <option value="5"<%= record.month == 5 ? ' selected' : '' %>>May</option>
+                            <option value="6"<%= record.month == 6 ? ' selected' : '' %>>June</option>
+                            <option value="7"<%= record.month == 7 ? ' selected' : '' %>>July</option>
+                            <option value="8"<%= record.month == 8 ? ' selected' : '' %>>August</option>
+                            <option value="9"<%= record.month == 9 ? ' selected' : '' %>>September</option>
+                            <option value="10"<%= record.month == 10 ? ' selected' : '' %>>October</option>
+                            <option value="11"<%= record.month == 11 ? ' selected' : '' %>>November</option>
+                            <option value="12"<%= record.month == 12 ? ' selected' : '' %>>December</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="day">Day</label>
+                        <select name="day" id="day">
+                            <% for (var d = 1; d <= 31; d++) { %>
+                                <option value="<%= d %>"<%= record.day == d ? ' selected' : '' %>><%= d %></option>
+                            <% } %>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="year">Year</label>
+                        <select name="year" id="year">
+                            <%
+                            var inceptionYear = 1953;
+                            var thisYear = (new Date()).getFullYear();
+                            for (var year = inceptionYear; year <= thisYear; year++) { %>
+                                <option value="<%= year %>"<%= record.year == year ? ' selected' : '' %>><%= year %></option>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <input type="submit" value="Save Changes"/>
+                <a href="/<%=hash%>/configure" class="btn-cancel">Cancel</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

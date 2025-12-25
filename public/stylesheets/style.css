@@ -194,6 +194,126 @@ table td:first-child {
   width: 120px;
 }
 
+/* Records table styling */
+.records-table-wrapper {
+  overflow-x: auto;
+}
+
+.records-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.records-table th,
+.records-table td {
+  padding: 12px 10px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.records-table th {
+  background: #667eea;
+  color: white;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+.records-table th:first-child {
+  border-radius: 6px 0 0 0;
+}
+
+.records-table th:last-child {
+  border-radius: 0 6px 0 0;
+}
+
+.records-table tbody tr:hover {
+  background: #f8f9ff;
+}
+
+.records-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-edit,
+.btn-delete {
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.85em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  border: none;
+}
+
+.btn-edit {
+  background: #667eea;
+  color: white;
+}
+
+.btn-edit:hover {
+  background: #5a6fd6;
+  color: white;
+  text-decoration: none;
+}
+
+.btn-delete {
+  background: #e74c3c;
+  color: white;
+}
+
+.btn-delete:hover {
+  background: #c0392b;
+}
+
+.delete-form {
+  display: inline;
+  margin: 0;
+  padding: 0;
+}
+
+/* Button group for edit form */
+.button-group {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.button-group input[type="submit"] {
+  flex: 1;
+  margin-top: 0;
+}
+
+.btn-cancel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #95a5a6;
+  color: white;
+  border: none;
+  padding: 14px 30px;
+  border-radius: 8px;
+  font-size: 1.1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.btn-cancel:hover {
+  background: #7f8c8d;
+  color: white;
+  text-decoration: none;
+}
+
 @media (max-width: 600px) {
   .container {
     padding: 25px;
@@ -205,5 +325,20 @@ table td:first-child {
 
   h1 {
     font-size: 1.6em;
+  }
+
+  .actions-cell {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .btn-edit,
+  .btn-delete {
+    width: 100%;
+    text-align: center;
+  }
+
+  .button-group {
+    flex-direction: column;
   }
 }
