@@ -12,6 +12,10 @@
     <div class="container">
         <h1><%= (!!configuration)?configuration.title:'Sobriety Calculator' %></h1>
 
+        <% if (error === 'duplicate') { %>
+        <div class="error-message">This clean time has already been submitted.</div>
+        <% } %>
+
         <% if (!!configuration && configuration.message) { %>
         <div class="message"><%- configuration.message %></div>
         <% } %>

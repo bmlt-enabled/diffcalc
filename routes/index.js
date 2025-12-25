@@ -18,7 +18,11 @@ function requireAuth(req, res, next) {
 router.get('/:hash', function(req, res, next) {
   store.getAll(req.params.hash, "config", function(results) {
     if (results != null) {
-      res.render('index', { hash: req.params.hash, configuration : JSON.parse(results["config"]) });
+      res.render('index', {
+        hash: req.params.hash,
+        configuration: JSON.parse(results["config"]),
+        error: req.query.error || null
+      });
     } else {
       res.send(404);
     }
@@ -40,9 +44,8 @@ router.post("/:hash/submit", function(req, res, next) {
   // Check for duplicate before saving
   store.get(hash, "dates", key, function(existing) {
     if (existing) {
-      // Duplicate found - show message without saving
-      var calculated = calculator.calculate(year, month, day);
-      res.render('duplicate', { hash: hash, allFields: allFields, calculated: calculated });
+      // Duplicate found - redirect back with error message
+      res.redirect('/' + hash + '?error=duplicate');
     } else {
       // No duplicate - calculate and save
       var calculated = calculator.calculate(year, month, day);
