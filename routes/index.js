@@ -34,12 +34,17 @@ router.post("/:hash/submit", function(req, res, next) {
   var day = req.body["day"];
   var month = req.body["month"];
   var year = req.body["year"];
-  var firstname = req.body["firstname"];
-  var lastname = req.body["lastname"];
+  var firstname = req.body["firstname"].trim();
+  var lastname = req.body["lastname"].trim();
   var allFields = req.body;
 
+  // Update allFields with trimmed values
+  allFields.firstname = firstname;
+  allFields.lastname = lastname;
+
   var hash = req.params.hash;
-  var key = firstname + "_" + lastname + "_" + month + "-" + day + "-" + year;
+  // Use lowercase for key to make duplicate check case-insensitive
+  var key = firstname.toLowerCase() + "_" + lastname.toLowerCase() + "_" + month + "-" + day + "-" + year;
 
   // Check for duplicate before saving
   store.get(hash, "dates", key, function(existing) {
@@ -151,9 +156,15 @@ router.post("/:hash/record/edit/:key", requireAuth, function(req, res, next) {
   var day = req.body["day"];
   var month = req.body["month"];
   var year = req.body["year"];
-  var firstname = req.body["firstname"];
-  var lastname = req.body["lastname"];
-  var newKey = firstname + "_" + lastname + "_" + month + "-" + day + "-" + year;
+  var firstname = req.body["firstname"].trim();
+  var lastname = req.body["lastname"].trim();
+
+  // Update req.body with trimmed values
+  req.body.firstname = firstname;
+  req.body.lastname = lastname;
+
+  // Use lowercase for key to match submit route
+  var newKey = firstname.toLowerCase() + "_" + lastname.toLowerCase() + "_" + month + "-" + day + "-" + year;
 
   // Delete old record first, then save with new key
   store.delete(hash, "dates", oldKey, function() {
