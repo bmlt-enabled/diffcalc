@@ -1,6 +1,7 @@
 var express = require('express');
 var store = require('../middleware/store');
 var calculator = require('../middleware/calculator');
+var qrcode = require('../middleware/qrcode');
 var router = express.Router();
 
 // Password for configure page (from environment variable)
@@ -78,6 +79,21 @@ router.get("/:hash/export", function(req, res, next) {
       res.end(results);
     } else {
       res.send(404);
+    }
+  });
+});
+
+router.get("/:hash/qr", function(req, res, next) {
+  var formUrl = req.protocol + '://' + req.get('host') + '/' + req.params.hash;
+  qrcode.generate(formUrl, function(qrCodeDataUrl) {
+    if (qrCodeDataUrl) {
+      res.render('qr-code', {
+        hash: req.params.hash,
+        qrCodeUrl: qrCodeDataUrl,
+        formUrl: formUrl
+      });
+    } else {
+      res.status(500).send("Error generating QR code");
     }
   });
 });

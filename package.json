@@ -9,11 +9,12 @@
     "body-parser": "~1.20.3",
     "cookie-parser": "~1.4.7",
     "debug": "~3.1.0",
-    "ejs": "~>3.1.10" ,
+    "ejs": "~>3.1.10",
     "express": "~4.21.2",
     "moment": "^2.10.6",
     "morgan": "~1.10.1",
     "node-redis": "^0.1.7",
+    "qrcode": "^1.5.4",
     "redis": "^3.1.1",
     "serve-favicon": "~2.5.1"
   }
