@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Share Form - QR Code</title>
+    <title><%= (!!configuration)?configuration.title:'Sobriety Calculator' %> - QR Code</title>
     <link rel="stylesheet" href="/stylesheets/style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Share This Form</h1>
+        <h1><%= (!!configuration)?configuration.title:'Sobriety Calculator' %></h1>
+        <% if (!!configuration && configuration.message) { %>
+        <div class="message"><%- configuration.message %></div>
+        <% } %>
         <p style="text-align: center; color: #666; margin-bottom: 30px;">
-            Scan this QR code to access the form
+            Scan this QR code to enter your clean time
         </p>
         <div style="text-align: center;">
             <img src="<%= qrCodeUrl %>" alt="QR Code" style="max-width: 300px; border: 10px solid #f0f0f0; border-radius: 12px;">

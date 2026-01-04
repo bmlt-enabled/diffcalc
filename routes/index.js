@@ -84,16 +84,24 @@ router.get("/:hash/export", function(req, res, next) {
 });
 
 router.get("/:hash/qr", function(req, res, next) {
-  var formUrl = req.protocol + '://' + req.get('host') + '/' + req.params.hash;
-  qrcode.generate(formUrl, function(qrCodeDataUrl) {
-    if (qrCodeDataUrl) {
-      res.render('qr-code', {
-        hash: req.params.hash,
-        qrCodeUrl: qrCodeDataUrl,
-        formUrl: formUrl
+  var formUrl = 'https://' + req.get('host') + '/' + req.params.hash;
+  store.getAll(req.params.hash, "config", function(results) {
+    if (results != null) {
+      var configuration = JSON.parse(results["config"]);
+      qrcode.generate(formUrl, function(qrCodeDataUrl) {
+        if (qrCodeDataUrl) {
+          res.render('qr-code', {
+            hash: req.params.hash,
+            qrCodeUrl: qrCodeDataUrl,
+            formUrl: formUrl,
+            configuration: configuration
+          });
+        } else {
+          res.status(500).send("Error generating QR code");
+        }
       });
     } else {
-      res.status(500).send("Error generating QR code");
+      res.send(404);
     }
   });
 });
