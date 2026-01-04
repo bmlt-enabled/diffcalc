@@ -16,5 +16,8 @@
     "qrcode": "^1.5.4",
     "redis": "^5.0.0",
     "serve-favicon": "~2.5.1"
+  },
+  "engines": {
+    "node": "24"
   }
 }
