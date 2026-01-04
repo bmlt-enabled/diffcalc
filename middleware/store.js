@@ -1,84 +1,82 @@
 var redis = require("redis");
 
-// Helper function to create Redis client with proper TLS configuration
-function createRedisClient() {
+// Helper function to create and connect Redis client with proper TLS configuration
+async function createRedisClient() {
     var redisUrl = process.env.REDIS_URL || process.env.REDISCLOUD_URL;
+    var client;
 
     // Check if using TLS (rediss://)
     if (redisUrl && redisUrl.startsWith('rediss://')) {
-        return redis.createClient({
+        client = redis.createClient({
             url: redisUrl,
-            tls: {
+            socket: {
+                tls: true,
                 rejectUnauthorized: false
             }
         });
+    } else if (redisUrl) {
+        client = redis.createClient({ url: redisUrl });
+    } else {
+        client = redis.createClient();
     }
 
-    return redis.createClient(redisUrl);
+    client.on("error", function (err) {
+        console.log("Error " + err);
+    });
+
+    await client.connect();
+    return client;
 }
 
 module.exports = {
-    'save' : function(hash, type, key, value, callback) {
-        var client = createRedisClient();
+    'save' : async function(hash, type, key, value, callback) {
+        var client = await createRedisClient();
 
-        client.on("error", function (err) {
-            console.log("Error " + err);
-        });
-
-        client.hset(hash + ":" + type, key, JSON.stringify(value), function() {
-            client.quit();
-            if (callback != null) callback();
-        });
+        await client.hSet(hash + ":" + type, key, JSON.stringify(value));
+        await client.disconnect();
+        if (callback != null) callback();
     },
 
-    'getAll' : function(hash, type, callback) {
-        var client = createRedisClient();
+    'getAll' : async function(hash, type, callback) {
+        var client = await createRedisClient();
 
-        client.hgetall(hash + ":" + type, function(err, results) {
-            client.quit();
-            callback(results);
-        });
+        var results = await client.hGetAll(hash + ":" + type);
+        await client.disconnect();
+        callback(results);
     },
 
-    'export' : function(hash, type, callback) {
-        var client = createRedisClient();
+    'export' : async function(hash, type, callback) {
+        var client = await createRedisClient();
         var exportText = "";
 
-        client.hgetall(hash + ":" + type, function(err, results) {
-            client.quit();
+        var results = await client.hGetAll(hash + ":" + type);
+        await client.disconnect();
 
-            if (results != null) {
-                Object.keys(results).forEach(function(key) {
-                    var keyObject = JSON.parse(results[key]);
-                    if (keyObject.email != null && keyObject.email.length > 0) {
-                        exportText += keyObject.email + "\r\n";
-                    }
-                });
-            }
+        if (results != null && Object.keys(results).length > 0) {
+            Object.keys(results).forEach(function(key) {
+                var keyObject = JSON.parse(results[key]);
+                if (keyObject.email != null && keyObject.email.length > 0) {
+                    exportText += keyObject.email + "\r\n";
+                }
+            });
+        }
 
-            callback(exportText);
-        });
+        callback(exportText);
     },
 
-    'get' : function(hash, type, key, callback) {
-        var client = createRedisClient();
+    'get' : async function(hash, type, key, callback) {
+        var client = await createRedisClient();
 
-        client.hget(hash + ":" + type, key, function(err, result) {
-            client.quit();
-            callback(result ? JSON.parse(result) : null);
-        });
+        var result = await client.hGet(hash + ":" + type, key);
+        await client.disconnect();
+        callback(result ? JSON.parse(result) : null);
     },
 
-    'delete' : function(hash, type, key, callback) {
-        var client = createRedisClient();
+    'delete' : async function(hash, type, key, callback) {
+        var client = await createRedisClient();
 
-        client.on("error", function (err) {
-            console.log("Error " + err);
-        });
-
-        client.hdel(hash + ":" + type, key, function(err, result) {
-            client.quit();
-            if (callback != null) callback(result);
-        });
+        var result = await client.hDel(hash + ":" + type, key);
+        await client.disconnect();
+        if (callback != null) callback(result);
     }
 };
