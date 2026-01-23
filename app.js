@@ -22,6 +22,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser('diffcalc-secret-key'));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Health check endpoint for Render
+app.get('/', function(req, res) {
+  res.status(200).send('OK');
+});
+
 app.use('/', routes);
 app.use('/users', users);
 
