@@ -1,60 +1,90 @@
-var redis = require("redis");
+var { createClient } = require("@libsql/client");
 
-// Helper function to create and connect Redis client with proper TLS configuration
-async function createRedisClient() {
-    var redisUrl = process.env.REDIS_URL || process.env.REDISCLOUD_URL;
-    var client;
+// Create Turso client - connection is managed internally
+var client = null;
 
-    // Check if using TLS (rediss://)
-    if (redisUrl && redisUrl.startsWith('rediss://')) {
-        client = redis.createClient({
-            url: redisUrl,
-            socket: {
-                tls: true,
-                rejectUnauthorized: false
-            }
+function getClient() {
+    if (!client) {
+        var url = process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL;
+        var authToken = process.env.TURSO_AUTH_TOKEN;
+
+        if (!url) {
+            // Default to local SQLite file for development
+            url = "file:./data/diffcalc.db";
+        }
+
+        client = createClient({
+            url: url,
+            authToken: authToken
         });
-    } else if (redisUrl) {
-        client = redis.createClient({ url: redisUrl });
-    } else {
-        client = redis.createClient();
     }
-
-    client.on("error", function (err) {
-        console.log("Error " + err);
-    });
-
-    await client.connect();
     return client;
 }
 
-module.exports = {
-    'save' : async function(hash, type, key, value, callback) {
-        var client = await createRedisClient();
+// Initialize database schema
+async function initializeDatabase() {
+    var db = getClient();
+    await db.execute(`
+        CREATE TABLE IF NOT EXISTS submissions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            hash TEXT NOT NULL,
+            type TEXT NOT NULL,
+            key TEXT NOT NULL,
+            value TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(hash, type, key)
+        )
+    `);
+    await db.execute(`
+        CREATE INDEX IF NOT EXISTS idx_hash_type ON submissions(hash, type)
+    `);
+}
 
-        await client.hSet(hash + ":" + type, key, JSON.stringify(value));
-        await client.disconnect();
+// Initialize on module load
+initializeDatabase().catch(function(err) {
+    console.log("Database initialization error: " + err);
+});
+
+module.exports = {
+    'save': async function(hash, type, key, value, callback) {
+        var db = getClient();
+
+        await db.execute({
+            sql: `INSERT OR REPLACE INTO submissions (hash, type, key, value) VALUES (?, ?, ?, ?)`,
+            args: [hash, type, key, JSON.stringify(value)]
+        });
+
         if (callback != null) callback();
     },
 
-    'getAll' : async function(hash, type, callback) {
-        var client = await createRedisClient();
+    'getAll': async function(hash, type, callback) {
+        var db = getClient();
 
-        var results = await client.hGetAll(hash + ":" + type);
-        await client.disconnect();
+        var result = await db.execute({
+            sql: `SELECT key, value FROM submissions WHERE hash = ? AND type = ?`,
+            args: [hash, type]
+        });
+
+        var results = {};
+        result.rows.forEach(function(row) {
+            results[row.key] = row.value;
+        });
+
         callback(results);
     },
 
-    'export' : async function(hash, type, callback) {
-        var client = await createRedisClient();
+    'export': async function(hash, type, callback) {
+        var db = getClient();
         var exportText = "";
 
-        var results = await client.hGetAll(hash + ":" + type);
-        await client.disconnect();
+        var result = await db.execute({
+            sql: `SELECT value FROM submissions WHERE hash = ? AND type = ?`,
+            args: [hash, type]
+        });
 
-        if (results != null && Object.keys(results).length > 0) {
-            Object.keys(results).forEach(function(key) {
-                var keyObject = JSON.parse(results[key]);
+        if (result.rows != null && result.rows.length > 0) {
+            result.rows.forEach(function(row) {
+                var keyObject = JSON.parse(row.value);
                 if (keyObject.email != null && keyObject.email.length > 0) {
                     exportText += keyObject.email + "\r\n";
                 }
@@ -64,19 +94,29 @@ module.exports = {
         callback(exportText);
     },
 
-    'get' : async function(hash, type, key, callback) {
-        var client = await createRedisClient();
+    'get': async function(hash, type, key, callback) {
+        var db = getClient();
 
-        var result = await client.hGet(hash + ":" + type, key);
-        await client.disconnect();
-        callback(result ? JSON.parse(result) : null);
+        var result = await db.execute({
+            sql: `SELECT value FROM submissions WHERE hash = ? AND type = ? AND key = ?`,
+            args: [hash, type, key]
+        });
+
+        if (result.rows.length > 0) {
+            callback(JSON.parse(result.rows[0].value));
+        } else {
+            callback(null);
+        }
     },
 
-    'delete' : async function(hash, type, key, callback) {
-        var client = await createRedisClient();
+    'delete': async function(hash, type, key, callback) {
+        var db = getClient();
 
-        var result = await client.hDel(hash + ":" + type, key);
-        await client.disconnect();
-        if (callback != null) callback(result);
+        var result = await db.execute({
+            sql: `DELETE FROM submissions WHERE hash = ? AND type = ? AND key = ?`,
+            args: [hash, type, key]
+        });
+
+        if (callback != null) callback(result.rowsAffected);
     }
 };

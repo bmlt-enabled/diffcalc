@@ -1,27 +1,14 @@
 services:
-  redis:
-    image: redis:8-alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis-data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
-
   app:
     build: .
     ports:
-      - "3000:3000"
+      - "3010:3010"
     environment:
-      - PORT=3000
-      - REDIS_URL=redis://redis:6379
+      - PORT=3010
       - CONFIGURE_PASSWORD=${CONFIGURE_PASSWORD:-jimmyk1953}
-    depends_on:
-      redis:
-        condition: service_healthy
-
-volumes:
-  redis-data:
+      # For local development, uses file-based SQLite (no TURSO_DATABASE_URL means local file)
+      # To test with Turso, set these environment variables:
+      # - TURSO_DATABASE_URL=libsql://your-db.turso.io
+      # - TURSO_AUTH_TOKEN=your-token
+    volumes:
+      - ./data:/app/data

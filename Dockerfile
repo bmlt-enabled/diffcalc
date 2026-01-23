@@ -1,9 +1,22 @@
-FROM node:9.3.0-alpine
+FROM node:24-alpine
 
-WORKDIR /opt
+WORKDIR /app
 
-ADD . . 
+# Copy package files first for better layer caching
+COPY package*.json ./
 
-RUN apk update && apk add nodejs-npm && npm install
+# Install dependencies
+RUN npm ci --omit=dev
 
-ENTRYPOINT ["npm", "start"]
+# Copy application code
+COPY . .
+
+# Expose port
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
+
+# Start the application
+CMD ["npm", "start"]

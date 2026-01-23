@@ -18,7 +18,7 @@ function requireAuth(req, res, next) {
 
 router.get('/:hash', function(req, res, next) {
   store.getAll(req.params.hash, "config", function(results) {
-    if (results != null) {
+    if (results != null && results["config"]) {
       res.render('index', {
         hash: req.params.hash,
         configuration: JSON.parse(results["config"]),
@@ -86,7 +86,7 @@ router.get("/:hash/export", function(req, res, next) {
 router.get("/:hash/qr", function(req, res, next) {
   var formUrl = 'https://' + req.get('host') + '/' + req.params.hash;
   store.getAll(req.params.hash, "config", function(results) {
-    if (results != null) {
+    if (results != null && results["config"]) {
       var configuration = JSON.parse(results["config"]);
       qrcode.generate(formUrl, function(qrCodeDataUrl) {
         if (qrCodeDataUrl) {

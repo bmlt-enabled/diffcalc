@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: diffcalc
+    runtime: docker
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: TURSO_DATABASE_URL
+        sync: false
+      - key: TURSO_AUTH_TOKEN
+        sync: false
+      - key: CONFIGURE_PASSWORD
+        sync: false
