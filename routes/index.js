@@ -128,7 +128,7 @@ router.get("/:hash/configure/logout", function(req, res, next) {
 router.get("/:hash/configure", requireAuth, function(req, res, next) {
   store.getAll(req.params.hash, "config", function(configResults) {
     store.getAll(req.params.hash, "dates", function(datesResults) {
-      var configuration = configResults ? JSON.parse(configResults.config) : null;
+      var configuration = configResults && configResults.config ? JSON.parse(configResults.config) : null;
       var records = [];
 
       if (datesResults) {
