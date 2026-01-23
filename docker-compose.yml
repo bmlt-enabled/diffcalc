@@ -2,9 +2,9 @@ services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - "3010:3010"
     environment:
-      - PORT=3000
+      - PORT=3010
       - CONFIGURE_PASSWORD=${CONFIGURE_PASSWORD:-jimmyk1953}
       # For local development, uses file-based SQLite (no TURSO_DATABASE_URL means local file)
       # To test with Turso, set these environment variables:
