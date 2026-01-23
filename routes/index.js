@@ -17,11 +17,11 @@ function requireAuth(req, res, next) {
 }
 
 router.get('/:hash', function(req, res, next) {
-  store.getAll(req.params.hash, "config", function(results) {
-    if (results != null && results["config"]) {
+  store.getConfig(req.params.hash, function(configuration) {
+    if (configuration) {
       res.render('index', {
         hash: req.params.hash,
-        configuration: JSON.parse(results["config"]),
+        configuration: configuration,
         error: req.query.error || null
       });
     } else {
@@ -48,21 +48,21 @@ router.post("/:hash/submit", function(req, res, next) {
   var key = firstname.toLowerCase() + "_" + lastname.toLowerCase() + "_" + month + "-" + day + "-" + year;
 
   // Check for duplicate before saving
-  store.get(hash, "dates", key, function(existing) {
+  store.get(hash, key, function(existing) {
     if (existing) {
       // Duplicate found - redirect back with error message
       res.redirect('/' + hash + '?error=duplicate');
     } else {
       // No duplicate - calculate and save
       var calculated = calculator.calculate(year, month, day);
-      store.save(hash, "dates", key, allFields);
+      store.save(hash, key, allFields);
       res.render('submitted', { hash: hash, allFields: allFields, calculated: calculated });
     }
   });
 });
 
 router.get("/:hash/total", function(req, res, next) {
-  store.getAll(req.params.hash, "dates", function(results) {
+  store.getAll(req.params.hash, function(results) {
     var total = calculator.grandTotal(results);
 
     res.render('total', { total: total } );
@@ -70,7 +70,7 @@ router.get("/:hash/total", function(req, res, next) {
 });
 
 router.get("/:hash/export", function(req, res, next) {
-  store.export(req.params.hash, "dates", function(results) {
+  store.export(req.params.hash, function(results) {
     if (results != null) {
       res.writeHead(200, {
         'Content-Type': 'application/force-download',
@@ -85,9 +85,8 @@ router.get("/:hash/export", function(req, res, next) {
 
 router.get("/:hash/qr", function(req, res, next) {
   var formUrl = 'https://' + req.get('host') + '/' + req.params.hash;
-  store.getAll(req.params.hash, "config", function(results) {
-    if (results != null && results["config"]) {
-      var configuration = JSON.parse(results["config"]);
+  store.getConfig(req.params.hash, function(configuration) {
+    if (configuration) {
       qrcode.generate(formUrl, function(qrCodeDataUrl) {
         if (qrCodeDataUrl) {
           res.render('qr-code', {
@@ -126,9 +125,8 @@ router.get("/:hash/configure/logout", function(req, res, next) {
 });
 
 router.get("/:hash/configure", requireAuth, function(req, res, next) {
-  store.getAll(req.params.hash, "config", function(configResults) {
-    store.getAll(req.params.hash, "dates", function(datesResults) {
-      var configuration = configResults && configResults.config ? JSON.parse(configResults.config) : null;
+  store.getConfig(req.params.hash, function(configuration) {
+    store.getAll(req.params.hash, function(datesResults) {
       var records = [];
 
       if (datesResults) {
@@ -149,21 +147,21 @@ router.get("/:hash/configure", requireAuth, function(req, res, next) {
 });
 
 router.post("/:hash/configure/save", requireAuth, function(req, res, next) {
-  store.save(req.params.hash, "config", "config", req.body, function(results) {
+  store.saveConfig(req.params.hash, req.body, function() {
     res.redirect('/' + req.params.hash + '/configure');
   });
 });
 
 router.post("/:hash/record/delete", requireAuth, function(req, res, next) {
   var key = req.body.key;
-  store.delete(req.params.hash, "dates", key, function(result) {
+  store.delete(req.params.hash, key, function(result) {
     res.redirect('/' + req.params.hash + '/configure');
   });
 });
 
 router.get("/:hash/record/edit/:key", requireAuth, function(req, res, next) {
   var key = decodeURIComponent(req.params.key);
-  store.get(req.params.hash, "dates", key, function(record) {
+  store.get(req.params.hash, key, function(record) {
     if (record) {
       record._key = key;
       res.render('edit-record', { hash: req.params.hash, record: record });
@@ -191,8 +189,8 @@ router.post("/:hash/record/edit/:key", requireAuth, function(req, res, next) {
   var newKey = firstname.toLowerCase() + "_" + lastname.toLowerCase() + "_" + month + "-" + day + "-" + year;
 
   // Delete old record first, then save with new key
-  store.delete(hash, "dates", oldKey, function() {
-    store.save(hash, "dates", newKey, req.body, function() {
+  store.delete(hash, oldKey, function() {
+    store.save(hash, newKey, req.body, function() {
       res.redirect('/' + hash + '/configure');
     });
   });

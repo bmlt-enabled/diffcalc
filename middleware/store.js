@@ -24,19 +24,35 @@ function getClient() {
 // Initialize database schema
 async function initializeDatabase() {
     var db = getClient();
+
+    // Events table for configuration
+    await db.execute(`
+        CREATE TABLE IF NOT EXISTS events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            hash TEXT NOT NULL UNIQUE,
+            title TEXT,
+            message TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    `);
+    await db.execute(`
+        CREATE INDEX IF NOT EXISTS idx_events_hash ON events(hash)
+    `);
+
+    // Submissions table for date entries
     await db.execute(`
         CREATE TABLE IF NOT EXISTS submissions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             hash TEXT NOT NULL,
-            type TEXT NOT NULL,
             key TEXT NOT NULL,
             value TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            UNIQUE(hash, type, key)
+            UNIQUE(hash, key)
         )
     `);
     await db.execute(`
-        CREATE INDEX IF NOT EXISTS idx_hash_type ON submissions(hash, type)
+        CREATE INDEX IF NOT EXISTS idx_submissions_hash ON submissions(hash)
     `);
 }
 
@@ -46,23 +62,59 @@ initializeDatabase().catch(function(err) {
 });
 
 module.exports = {
-    'save': async function(hash, type, key, value, callback) {
+    // Event configuration methods
+    'saveConfig': async function(hash, config, callback) {
         var db = getClient();
 
         await db.execute({
-            sql: `INSERT OR REPLACE INTO submissions (hash, type, key, value) VALUES (?, ?, ?, ?)`,
-            args: [hash, type, key, JSON.stringify(value)]
+            sql: `INSERT INTO events (hash, title, message, updated_at)
+                  VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+                  ON CONFLICT(hash) DO UPDATE SET
+                  title = excluded.title,
+                  message = excluded.message,
+                  updated_at = CURRENT_TIMESTAMP`,
+            args: [hash, config.title || '', config.message || '']
         });
 
         if (callback != null) callback();
     },
 
-    'getAll': async function(hash, type, callback) {
+    'getConfig': async function(hash, callback) {
         var db = getClient();
 
         var result = await db.execute({
-            sql: `SELECT key, value FROM submissions WHERE hash = ? AND type = ?`,
-            args: [hash, type]
+            sql: `SELECT title, message FROM events WHERE hash = ?`,
+            args: [hash]
+        });
+
+        if (result.rows.length > 0) {
+            callback({
+                title: result.rows[0].title,
+                message: result.rows[0].message
+            });
+        } else {
+            callback(null);
+        }
+    },
+
+    // Submission methods
+    'save': async function(hash, key, value, callback) {
+        var db = getClient();
+
+        await db.execute({
+            sql: `INSERT OR REPLACE INTO submissions (hash, key, value) VALUES (?, ?, ?)`,
+            args: [hash, key, JSON.stringify(value)]
+        });
+
+        if (callback != null) callback();
+    },
+
+    'getAll': async function(hash, callback) {
+        var db = getClient();
+
+        var result = await db.execute({
+            sql: `SELECT key, value FROM submissions WHERE hash = ?`,
+            args: [hash]
         });
 
         var results = {};
@@ -73,13 +125,13 @@ module.exports = {
         callback(results);
     },
 
-    'export': async function(hash, type, callback) {
+    'export': async function(hash, callback) {
         var db = getClient();
         var exportText = "";
 
         var result = await db.execute({
-            sql: `SELECT value FROM submissions WHERE hash = ? AND type = ?`,
-            args: [hash, type]
+            sql: `SELECT value FROM submissions WHERE hash = ?`,
+            args: [hash]
         });
 
         if (result.rows != null && result.rows.length > 0) {
@@ -94,12 +146,12 @@ module.exports = {
         callback(exportText);
     },
 
-    'get': async function(hash, type, key, callback) {
+    'get': async function(hash, key, callback) {
         var db = getClient();
 
         var result = await db.execute({
-            sql: `SELECT value FROM submissions WHERE hash = ? AND type = ? AND key = ?`,
-            args: [hash, type, key]
+            sql: `SELECT value FROM submissions WHERE hash = ? AND key = ?`,
+            args: [hash, key]
         });
 
         if (result.rows.length > 0) {
@@ -109,12 +161,12 @@ module.exports = {
         }
     },
 
-    'delete': async function(hash, type, key, callback) {
+    'delete': async function(hash, key, callback) {
         var db = getClient();
 
         var result = await db.execute({
-            sql: `DELETE FROM submissions WHERE hash = ? AND type = ? AND key = ?`,
-            args: [hash, type, key]
+            sql: `DELETE FROM submissions WHERE hash = ? AND key = ?`,
+            args: [hash, key]
         });
 
         if (callback != null) callback(result.rowsAffected);
