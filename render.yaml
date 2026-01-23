@@ -3,7 +3,7 @@ services:
     name: diffcalc
     runtime: docker
     plan: free
-    healthCheckPath: /
+    healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
