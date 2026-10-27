@@ -19,6 +19,10 @@
             <div class="alert" role="alert">This clean time has already been submitted.</div>
             <% } %>
 
+            <% if (error === 'invalid-date') { %>
+            <div class="alert" role="alert">Please choose a real clean date that is not in the future.</div>
+            <% } %>
+
             <% if (!!configuration && configuration.message) { %>
             <div class="message"><%- configuration.message %></div>
             <% } %>
