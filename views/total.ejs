@@ -1,25 +1,30 @@
+<%
+function plural(n, one, many) { return n === 1 ? one : many; }
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Total Time</title>
-    <link rel="stylesheet" href="/stylesheets/style.css">
+    <%- include('partials/head', { title: 'Total Time' }) %>
 </head>
-<body>
-    <div class="container">
-        <h1>Total Time</h1>
+<body class="page--stage">
+    <main class="stage">
+        <%- include('partials/masthead') %>
 
-        <div class="result-box">
-            <h2>Combined Total</h2>
-            <p class="stats"><%=total.years%> year(s), <%=total.months%> month(s), and <%=total.days%> day(s)</p>
-            <div class="total-days"><%=total.totalDays%></div>
-            <p class="stats">Total Days</p>
-        </div>
+        <section class="stage__body" aria-labelledby="total-title">
+            <h1 id="total-title" class="eyebrow">Combined clean time in this room</h1>
 
-        <div class="back-link">
-            <a href="javascript:history.back()">Go Back</a>
-        </div>
-    </div>
+            <p class="figure rise"><%= Number(total.totalDays).toLocaleString('en-US') %><span class="figure__unit"><%= plural(total.totalDays, 'day', 'days') %> clean, together</span></p>
+
+            <ul class="breakdown rise rise--late" aria-label="Breakdown">
+                <li><span class="breakdown__value"><%= total.years %></span><span class="breakdown__label"><%= plural(total.years, 'year', 'years') %></span></li>
+                <li><span class="breakdown__value"><%= total.months %></span><span class="breakdown__label"><%= plural(total.months, 'month', 'months') %></span></li>
+                <li><span class="breakdown__value"><%= total.days %></span><span class="breakdown__label"><%= plural(total.days, 'day', 'days') %></span></li>
+            </ul>
+        </section>
+
+        <footer class="stage__footer">
+            <a href="javascript:history.back()">Go back</a>
+        </footer>
+    </main>
 </body>
 </html>

@@ -1,26 +1,36 @@
+<%
+function plural(n, one, many) { return n === 1 ? one : many; }
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%- include('partials/head', { title: 'Congratulations!' }) %>
     <meta http-equiv="refresh" content="10; url=/<%= hash %>">
-    <title>Congratulations!</title>
-    <link rel="stylesheet" href="/stylesheets/style.css">
 </head>
 <body>
-    <div class="container">
-        <div class="result-box">
-            <h2>Congratulations, <%= allFields.firstname %>!</h2>
-            <p class="stats">You have been clean</p>
-            <p class="stats"><%= calculated.years %> years, <%= calculated.months %> months, and <%= calculated.days %> days</p>
-            <div class="total-days"><%= calculated.totalDays %></div>
-            <p class="stats">Total Days</p>
-        </div>
+    <main class="shell">
+        <%- include('partials/masthead') %>
 
-        <div class="back-link">
-            <p>You will be redirected to the home page in 10 seconds.</p>
-            <p><a href="/<%= hash %>">Click here to return now</a></p>
+        <div class="stack">
+            <section class="result rise" aria-labelledby="result-title">
+                <span class="eyebrow">You have been clean for</span>
+                <h1 id="result-title">Congratulations, <%= allFields.firstname %>!</h1>
+
+                <p class="figure"><%= Number(calculated.totalDays).toLocaleString('en-US') %><span class="figure__unit"><%= plural(calculated.totalDays, 'day', 'days') %></span></p>
+
+                <ul class="breakdown" aria-label="Breakdown">
+                    <li><span class="breakdown__value"><%= calculated.years %></span><span class="breakdown__label"><%= plural(calculated.years, 'year', 'years') %></span></li>
+                    <li><span class="breakdown__value"><%= calculated.months %></span><span class="breakdown__label"><%= plural(calculated.months, 'month', 'months') %></span></li>
+                    <li><span class="breakdown__value"><%= calculated.days %></span><span class="breakdown__label"><%= plural(calculated.days, 'day', 'days') %></span></li>
+                </ul>
+            </section>
+
+            <div class="redirect-note rise rise--late">
+                <div class="countdown" aria-hidden="true"></div>
+                <p>Your time has been added. Returning to the form in 10 seconds.</p>
+                <p><a href="/<%= hash %>">Return now</a></p>
+            </div>
         </div>
-    </div>
+    </main>
 </body>
 </html>

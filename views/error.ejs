@@ -1,3 +1,17 @@
-<h1><%= message %></h1>
-<h2><%= error.status %></h2>
-<pre><%= error.stack %></pre>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('partials/head', { title: 'Something went wrong' }) %>
+</head>
+<body>
+    <main class="shell">
+        <%- include('partials/masthead') %>
+
+        <div class="stack">
+            <% if (error.status) { %><p class="error-code"><%= error.status %></p><% } %>
+            <h1><%= message %></h1>
+            <% if (error.stack) { %><pre class="stacktrace"><%= error.stack %></pre><% } %>
+        </div>
+    </main>
+</body>
+</html>

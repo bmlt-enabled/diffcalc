@@ -1,31 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configure Login</title>
-    <link rel="stylesheet" href="/stylesheets/style.css">
+    <%- include('partials/head', { title: 'Configure Login' }) %>
 </head>
 <body>
-    <div class="container">
-        <h1>Configure Login</h1>
+    <main class="shell">
+        <%- include('partials/masthead') %>
 
-        <% if (error) { %>
-            <div class="error-message"><%= error %></div>
-        <% } %>
-
-        <form method="post" action="/<%=hash%>/configure/login">
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" name="password" id="password" required autofocus>
+        <div class="stack">
+            <div>
+                <span class="eyebrow">Organisers</span>
+                <h1 class="page-title">Sign in to configure</h1>
             </div>
 
-            <input type="submit" value="Login">
-        </form>
+            <% if (error) { %>
+            <div class="alert" role="alert"><%= error %></div>
+            <% } %>
 
-        <div class="back-link">
-            <a href="/<%=hash%>">Back to Calculator</a>
+            <form class="card form" method="post" action="/<%=hash%>/configure/login">
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input class="input" type="password" name="password" id="password" required autofocus autocomplete="current-password">
+                </div>
+
+                <button type="submit" class="button--block">Sign in</button>
+            </form>
+
+            <p class="redirect-note"><a href="/<%=hash%>">Back to the form</a></p>
         </div>
-    </div>
+    </main>
 </body>
 </html>
