@@ -13,6 +13,10 @@
                 <h1 class="page-title">Edit record</h1>
             </div>
 
+            <% if (error === 'invalid-date') { %>
+            <div class="alert" role="alert">Please choose a real clean date that is not in the future.</div>
+            <% } %>
+
             <form class="card form" method="post" action="/<%=hash%>/record/edit/<%= encodeURIComponent(record._key) %>">
                 <div class="field">
                     <label for="FirstName">First name</label>

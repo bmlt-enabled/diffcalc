@@ -44,6 +44,11 @@ router.post("/:hash/submit", function(req, res, next) {
   allFields.lastname = lastname;
 
   var hash = req.params.hash;
+
+  if (!calculator.isValidCleanDate(year, month, day)) {
+    return res.redirect('/' + hash + '?error=invalid-date');
+  }
+
   // Use lowercase for key to make duplicate check case-insensitive
   var key = firstname.toLowerCase() + "_" + lastname.toLowerCase() + "_" + month + "-" + day + "-" + year;
 
@@ -164,7 +169,7 @@ router.get("/:hash/record/edit/:key", requireAuth, function(req, res, next) {
   store.get(req.params.hash, key, function(record) {
     if (record) {
       record._key = key;
-      res.render('edit-record', { hash: req.params.hash, record: record });
+      res.render('edit-record', { hash: req.params.hash, record: record, error: req.query.error || null });
     } else {
       res.redirect('/' + req.params.hash + '/configure');
     }
@@ -184,6 +189,10 @@ router.post("/:hash/record/edit/:key", requireAuth, function(req, res, next) {
   // Update req.body with trimmed values
   req.body.firstname = firstname;
   req.body.lastname = lastname;
+
+  if (!calculator.isValidCleanDate(year, month, day)) {
+    return res.redirect('/' + hash + '/record/edit/' + encodeURIComponent(oldKey) + '?error=invalid-date');
+  }
 
   // Use lowercase for key to match submit route
   var newKey = firstname.toLowerCase() + "_" + lastname.toLowerCase() + "_" + month + "-" + day + "-" + year;

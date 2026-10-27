@@ -3,19 +3,30 @@ var monthDay = [ 31, -1, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
 var _this = this;
 
 var self = {
+    // A clean date must be a real calendar date (no Feb 31) and not after today.
+    'isValidCleanDate' : function(year, month, day) {
+        var y = Number(year), m = Number(month), d = Number(day);
+        if (!Number.isInteger(y) || !Number.isInteger(m) || !Number.isInteger(d)) {
+            return false;
+        }
+
+        var date = moment([y, m - 1, d]);
+        return date.isValid() && !date.isAfter(moment(), 'day');
+    },
+
     'calculate' : function(year, month, day) {
+        // invalid or future dates have no clean time to report
+        if (!self.isValidCleanDate(year, month, day)) {
+            return null;
+        }
+
         // calculate the time
         var fromDate, toDate, daysBetween, monthsBetween, yearsBetween;
-        var startDate = moment([year, (month - 1), day]);
+        var startDate = moment([Number(year), Number(month) - 1, Number(day)]);
         var endDate = moment();
 
-        if (startDate > endDate) {
-            fromDate = endDate;
-            toDate = startDate;
-        } else {
-            fromDate = startDate;
-            toDate = endDate;
-        }
+        fromDate = startDate;
+        toDate = endDate;
 
         var increment = 0;
 
@@ -70,6 +81,11 @@ var self = {
         Object.keys(data).forEach(function(key) {
             var val = JSON.parse(data[key]);
             var calculated = self.calculate(val.year, val.month, val.day);
+
+            if (calculated === null) {
+                console.warn("Skipping record with invalid or future clean date: " + key);
+                return;
+            }
 
             days += calculated.days;
             months += calculated.months;
