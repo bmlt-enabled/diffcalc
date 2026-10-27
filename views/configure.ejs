@@ -1,73 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configure</title>
-    <link rel="stylesheet" href="/stylesheets/style.css">
+    <%- include('partials/head', { title: 'Configure' }) %>
 </head>
 <body>
-    <div class="container">
-        <div class="logout-bar">
-            <a href="/<%=hash%>/configure/logout" class="btn-logout">Logout</a>
-        </div>
-        <h1>Configuration</h1>
+    <main class="shell shell--wide">
+        <%- include('partials/masthead') %>
 
-        <form method="post" action="/<%=hash%>/configure/save">
-            <div class="form-group">
-                <label for="title">Title</label>
-                <input type="text" name="title" id="title" value="<%= (!!configuration)?configuration.title:'' %>">
+        <div class="stack">
+            <div class="toolbar">
+                <div>
+                    <span class="eyebrow">Organisers</span>
+                    <h1 class="page-title">Configuration</h1>
+                </div>
+                <a href="/<%=hash%>/configure/logout" class="button button--secondary button--small">Log out</a>
             </div>
 
-            <div class="form-group">
-                <label for="message">Message</label>
-                <textarea name="message" id="message" rows="10"><%= (!!configuration)?configuration.message:'' %></textarea>
-            </div>
+            <div class="admin-grid">
+                <div class="stack">
+                    <form class="card form" method="post" action="/<%=hash%>/configure/save">
+                        <h2 class="card__title">Event page</h2>
+                        <div class="field">
+                            <label for="title">Title</label>
+                            <input class="input" type="text" name="title" id="title" value="<%= (!!configuration)?configuration.title:'' %>">
+                        </div>
 
-            <input type="submit" value="Save Configuration">
-        </form>
+                        <div class="field">
+                            <label for="message">Message <span class="field__hint">(HTML allowed)</span></label>
+                            <textarea class="input" name="message" id="message" rows="10"><%= (!!configuration)?configuration.message:'' %></textarea>
+                        </div>
 
-        <div class="admin-section">
-            <h2 style="margin-bottom: 15px; color: #667eea;">Export Data</h2>
-            <p>Download all submitted data: <a href="/<%=hash%>/export">Export to file</a></p>
-        </div>
+                        <button type="submit" class="button--block">Save configuration</button>
+                    </form>
 
-        <div class="admin-section">
-            <h2 style="margin-bottom: 15px; color: #667eea;">Submitted Records</h2>
-            <% if (records && records.length > 0) { %>
-                <p style="margin-bottom: 15px; color: #666;"><%= records.length %> record(s) found</p>
-                <div class="records-table-wrapper">
-                    <table class="records-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Date</th>
-                                <th>Email</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% records.forEach(function(record) { %>
+                    <section class="card" aria-labelledby="export-title">
+                        <h2 id="export-title" class="card__title">Export data</h2>
+                        <p class="muted">Download every submitted record as a text file.</p>
+                        <a class="button button--secondary button--block" href="/<%=hash%>/export">Export to file</a>
+                    </section>
+                </div>
+
+                <section class="card" aria-labelledby="records-title">
+                    <div class="toolbar">
+                        <h2 id="records-title" class="card__title">Submitted records</h2>
+                        <% if (records && records.length > 0) { %>
+                        <span class="muted"><%= records.length %> record(s)</span>
+                        <% } %>
+                    </div>
+                    <% if (records && records.length > 0) { %>
+                    <div class="table-wrap">
+                        <table class="table">
+                            <thead>
                                 <tr>
-                                    <td><%= record.firstname %> <%= record.lastname %></td>
-                                    <td><%= record.month %>/<%= record.day %>/<%= record.year %></td>
-                                    <td><%= record.email || '-' %></td>
-                                    <td class="actions-cell">
-                                        <a href="/<%=hash%>/record/edit/<%= encodeURIComponent(record._key) %>" class="btn-edit">Edit</a>
-                                        <form method="post" action="/<%=hash%>/record/delete" class="delete-form" onsubmit="return confirm('Are you sure you want to delete this record for <%= record.firstname %> <%= record.lastname %>?');">
-                                            <input type="hidden" name="key" value="<%= record._key %>">
-                                            <button type="submit" class="btn-delete">Delete</button>
-                                        </form>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Clean date</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col"><span class="visually-hidden">Actions</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% records.forEach(function(record) { %>
+                                <tr>
+                                    <td><strong><%= record.firstname %> <%= record.lastname %></strong></td>
+                                    <td class="numeric" data-label="Clean date:"><%= record.month %>/<%= record.day %>/<%= record.year %></td>
+                                    <td data-label="Email:"><%= record.email || '-' %></td>
+                                    <td>
+                                        <div class="table-actions">
+                                            <a href="/<%=hash%>/record/edit/<%= encodeURIComponent(record._key) %>" class="button button--secondary button--small">Edit</a>
+                                            <form method="post" action="/<%=hash%>/record/delete" onsubmit="return confirm('Are you sure you want to delete this record for <%= record.firstname %> <%= record.lastname %>?');">
+                                                <input type="hidden" name="key" value="<%= record._key %>">
+                                                <button type="submit" class="button--danger button--small">Delete</button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
-                            <% }); %>
-                        </tbody>
-                    </table>
-                </div>
-            <% } else { %>
-                <p style="color: #888; font-style: italic;">No records submitted yet.</p>
-            <% } %>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <% } else { %>
+                    <p class="empty">No records submitted yet.</p>
+                    <% } %>
+                </section>
+            </div>
         </div>
-    </div>
+    </main>
 </body>
 </html>

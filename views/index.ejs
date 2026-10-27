@@ -1,119 +1,87 @@
+<% var eventTitle = (!!configuration && configuration.title) || 'Sobriety Calculator'; %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= (!!configuration)?configuration.title:'Sobriety Calculator' %></title>
-    <link rel="stylesheet" href="/stylesheets/style.css">
-    <script type="text/javascript" src="/javascripts/jquery-1.7.1.min.js"></script>
-    <script type="text/javascript" src="/javascripts/site.js"></script>
+    <%- include('partials/head', { title: eventTitle }) %>
+    <script src="/javascripts/site.js" defer></script>
 </head>
 <body>
-    <div class="container">
-        <h1><%= (!!configuration)?configuration.title:'Sobriety Calculator' %></h1>
+    <main class="shell">
+        <%- include('partials/masthead') %>
 
-        <% if (error === 'duplicate') { %>
-        <div class="error-message">This clean time has already been submitted.</div>
-        <% } %>
-
-        <% if (!!configuration && configuration.message) { %>
-        <div class="message"><%- configuration.message %></div>
-        <% } %>
-
-        <form method="post" action="/<%= hash %>/submit">
-            <div class="form-group">
-                <label for="FirstName">First Name</label>
-                <input type="text" name="firstname" id="FirstName" maxlength="50" required/>
+        <div class="stack">
+            <div>
+                <span class="eyebrow">Add your clean time</span>
+                <h1 class="page-title"><%= eventTitle %></h1>
             </div>
 
-            <div class="form-group">
-                <label for="LastName">Last Initial</label>
-                <input type="text" name="lastname" id="LastName" maxlength="1" required/>
-            </div>
+            <% if (error === 'duplicate') { %>
+            <div class="alert" role="alert">This clean time has already been submitted.</div>
+            <% } %>
 
-            <div class="form-group">
-                <label for="Email">Email</label>
-                <input type="email" name="email" id="Email" maxlength="50"/>
-            </div>
+            <% if (!!configuration && configuration.message) { %>
+            <div class="message"><%- configuration.message %></div>
+            <% } %>
 
-            <div class="form-group">
-                <label>Clean Date</label>
-                <div class="date-fields">
-                    <div>
-                        <label for="month">Month</label>
-                        <select name="month" id="month">
-                            <option value="1">January</option>
-                            <option value="2">February</option>
-                            <option value="3">March</option>
-                            <option value="4">April</option>
-                            <option value="5">May</option>
-                            <option value="6">June</option>
-                            <option value="7">July</option>
-                            <option value="8">August</option>
-                            <option value="9">September</option>
-                            <option value="10">October</option>
-                            <option value="11">November</option>
-                            <option selected value="12">December</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="day">Day</label>
-                        <select name="day" id="day">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                            <option value="10">10</option>
-                            <option value="11">11</option>
-                            <option value="12">12</option>
-                            <option value="13">13</option>
-                            <option value="14">14</option>
-                            <option value="15">15</option>
-                            <option value="16">16</option>
-                            <option value="17">17</option>
-                            <option value="18">18</option>
-                            <option value="19">19</option>
-                            <option value="20">20</option>
-                            <option value="21">21</option>
-                            <option value="22">22</option>
-                            <option value="23">23</option>
-                            <option value="24">24</option>
-                            <option value="25">25</option>
-                            <option value="26">26</option>
-                            <option value="27">27</option>
-                            <option value="28">28</option>
-                            <option value="29">29</option>
-                            <option value="30">30</option>
-                            <option selected value="31">31</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="year">Year</label>
-                        <select name="year" id="year">
-                            <%inceptionYear = 1953
-                              thisYear = (new Date()).getFullYear();
-                              for (year = inceptionYear; year <= thisYear; year++) {%>
-                                <option value="<%=year%>"<%if (year == thisYear) {%> selected<%}%>><%=year%></option>
-                            <%}%>
-                        </select>
-                    </div>
+            <form class="card form" method="post" action="/<%= hash %>/submit" id="cleantime-form">
+                <div class="field">
+                    <label for="FirstName">First name</label>
+                    <input class="input" type="text" name="firstname" id="FirstName" maxlength="50" required autocomplete="given-name" autocapitalize="words"/>
                 </div>
-            </div>
 
-            <input type="submit" value="Calculate" onclick="return validateFields();"/>
-        </form>
+                <div class="field">
+                    <label for="LastName">Last initial</label>
+                    <input class="input" type="text" name="lastname" id="LastName" maxlength="1" required autocomplete="off" autocapitalize="characters"/>
+                </div>
 
-        <hr>
-        <div style="text-align: center;">
-            <a href="/<%= hash %>/total">View Total Time</a> | <a href="/<%= hash %>/qr">Generate QR Code</a>
+                <div class="field">
+                    <label for="Email">Email <span class="field__hint">(optional)</span></label>
+                    <input class="input" type="email" name="email" id="Email" maxlength="50" autocomplete="email" inputmode="email"/>
+                </div>
+
+                <fieldset class="field">
+                    <legend>Clean date</legend>
+                    <div class="date-fields">
+                        <div class="select date-month">
+                            <label for="month">Month</label>
+                            <select name="month" id="month">
+                                <% ['January','February','March','April','May','June','July','August','September','October','November','December'].forEach(function(name, i) { %>
+                                <option value="<%= i + 1 %>"<%= i === 11 ? ' selected' : '' %>><%= name %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+
+                        <div class="select date-day">
+                            <label for="day">Day</label>
+                            <select name="day" id="day">
+                                <% for (var d = 1; d <= 31; d++) { %>
+                                <option value="<%= d %>"<%= d === 31 ? ' selected' : '' %>><%= d %></option>
+                                <% } %>
+                            </select>
+                        </div>
+
+                        <div class="select date-year">
+                            <label for="year">Year</label>
+                            <select name="year" id="year">
+                                <%
+                                var inceptionYear = 1953;
+                                var thisYear = (new Date()).getFullYear();
+                                for (var year = thisYear; year >= inceptionYear; year--) { %>
+                                <option value="<%= year %>"<%= year === thisYear ? ' selected' : '' %>><%= year %></option>
+                                <% } %>
+                            </select>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <button type="submit" class="button--block">Add my clean time</button>
+            </form>
+
+            <nav class="event-nav" aria-label="Event pages">
+                <a class="button button--secondary" href="/<%= hash %>/total">Total time</a>
+                <a class="button button--secondary" href="/<%= hash %>/qr">QR code</a>
+            </nav>
         </div>
-    </div>
+    </main>
 </body>
 </html>

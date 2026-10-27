@@ -1,48 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CleanTime.live - Recovery Time Calculator</title>
-    <link rel="stylesheet" href="/stylesheets/style.css">
+    <%- include('partials/head', { title: 'CleanTime.live - Recovery Time Calculator' }) %>
 </head>
 <body>
-    <div class="container">
-        <h1>CleanTime.live</h1>
+    <main class="shell">
+        <%- include('partials/masthead') %>
 
-        <div class="message">
-            <p><strong>What is CleanTime.live?</strong></p>
-            <p>CleanTime.live is a tool for recovery events or groups to collectively track and celebrate clean time milestones. It allows events or groups to gather clean time data from their members and display combined totals during celebrations, anniversaries, and special occasions.</p>
+        <div class="stack">
+            <div>
+                <span class="eyebrow">For recovery events &amp; groups</span>
+                <h1 class="page-title">Celebrate the clean time in the room, together.</h1>
+            </div>
+
+            <p class="lede">CleanTime.live lets an event or group gather members’ clean dates and show the combined total during celebrations, anniversaries and special occasions.</p>
+
+            <section class="card" aria-labelledby="how-title">
+                <h2 id="how-title" class="card__title">How it works</h2>
+                <ol class="steps">
+                    <li>Each event or group gets its own private space.</li>
+                    <li>Members scan a QR code and submit their clean date on their phone.</li>
+                    <li>CleanTime.live works out the years, months and days.</li>
+                    <li>Put the combined total up on the screen and celebrate.</li>
+                </ol>
+            </section>
+
+            <section class="card" aria-labelledby="request-title">
+                <h2 id="request-title" class="card__title">Request a space</h2>
+                <p class="muted">CleanTime.live isn’t self-service. To request a space for your event or group, open an issue on GitHub.</p>
+                <a class="button button--block"
+                   href="https://github.com/bmlt-enabled/diffcalc/issues/new?title=Request%20new%20group%20space&amp;body=Group%20name:%0AContact%20email:%0A">
+                    Request a space
+                </a>
+            </section>
         </div>
+    </main>
 
-        <div class="admin-section">
-            <h2 style="color: #667eea; margin-bottom: 15px;">How It Works</h2>
-            <ul style="list-style-position: inside; line-height: 2;">
-                <li>Each event or group gets their own private space</li>
-                <li>Members submit their clean date via a simple form</li>
-                <li>The tool calculates years, months, and days of clean time</li>
-                <li>Events or groups can view combined totals for celebrations</li>
-                <li>QR codes available for easy mobile access</li>
-            </ul>
-        </div>
-
-        <hr>
-
-        <div class="admin-section">
-            <h2 style="color: #667eea; margin-bottom: 15px;">Request Access</h2>
-            <p style="margin-bottom: 15px;">CleanTime.live is not self-service. To request a space for your event or group, please submit an issue on GitHub:</p>
-            <a href="https://github.com/bmlt-enabled/diffcalc/issues/new?title=Request%20new%20group%20space&body=Group%20name:%0AContact%20email:%0A"
-               class="btn-edit"
-               style="display: inline-block; padding: 14px 30px; font-size: 1.1em; text-align: center; width: auto;">
-                Request a Space
-            </a>
-        </div>
-
-        <hr>
-
-        <div style="text-align: center; color: #777; font-size: 0.9em;">
-            <p>CleanTime.live is a free service for recovery communities.</p>
-        </div>
-    </div>
+    <footer class="site-footer">
+        <p>CleanTime.live is a free service for recovery communities.</p>
+    </footer>
 </body>
 </html>
